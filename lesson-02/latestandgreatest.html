@@ -178,7 +178,7 @@
              // get the class breaks for the current data attribute
 			var breaks = getClassBreaks(dataLayer); // STEP 3 VAR BREAKS WITH RETURNED VALUED FROM GET CLASS BREAKS USES DATA LAYER
             //update Legend Breaks 
-			updateLegened(breaks); // STEP 4 - ADD TO UPDATE LEGENED INStEAD OF ADD LEGEND
+			updateLegend(breaks); // STEP 4 - ADD TO UPDATE LEGENED INStEAD OF ADD LEGEND
 			// loop through each county layer to update the color and tooltip info
 			dataLayer.eachLayer(function(layer) {
 
@@ -222,7 +222,6 @@
 
                 attributeValue = this.value;// this is context in which event is happening
                 updateMap(dataLayer);
-                updateLegend(breaks)
             });
         }
 		function getClassBreaks(dataLayer) {
@@ -268,7 +267,7 @@
 
 		}
 
-		function addLegend(breaks) {
+		function addLegend() {
 
 			// create a new Leaflet control object, and position it top left
 			var legendControl = L.control({ position: 'topleft' });
@@ -295,7 +294,7 @@
 
 		}
         
-        function updateLegened (breaks){ //STEP 1 ADD BREAKS WHERE IS IT PASSED FROM and STEP 5 now receiving breeaks from update map
+        function updateLegend (breaks){ //STEP 1 ADD BREAKS WHERE IS IT PASSED FROM and STEP 5 now receiving breeaks from update map
             // select the legend, add a title, begin an unordered list and assign to a variable
 			var legend = $('#legend').html("<h5>" + labels[attributeValue] + "</h5>");
 
@@ -308,11 +307,28 @@
 					'<span style="background:' + color + '"></span> ' +
 					'<label>' + (breaks[i][0] * 100).toLocaleString() + ' &mdash; ' +
 					(breaks[i][1] * 100).toLocaleString() + ' %</label>');
-			//Step 6 - Pass information back to map to draw map
             }
         }
 
+/*updateLegend contains a getColor function argumens of breaks cycled through, and breaks 
+the for loops referes to the variable length 
+Breaks must be a universal variable... but it isn't it appears in updateMap and classbreaks
+Previously in addLegend - where was breaks coming from?
+ahh it accepted breaks as an argument (addLegend) - this isn't necessary now so it should be added now to update legend and taken away from create legend'
+I have to call it from it's origin which is in updateMAP'
+var Breaks is returned value from getClassBreaks function, which passes in 'data layer as an argument'
+dataLayer is passed in from draw map (which takes data from general leaflet tools)
+getClassBreaks has data layer passed in from update map 
+it makes clusters represented by the value 'breaks'
+breaks is retruned up to getClassBreaks which is the function body of Update map - it is not breaks 
+which is passsed to addLegend via the breaks variable
+in addLegend breaks does the work of the legend, but wait... 
+it is used to make the variable color which is passed as an argument into the get color function body
+where d equal to all iterations (whatever the particluar value is) and then the classifications themselves (breaks) is borrowed fom the for loop
+the classification scheme is returned to getColor caller which is addLegend 
+color is sued in legend.append to make everything ook nice. */
 
+        
 	</script>
 
 </body>
