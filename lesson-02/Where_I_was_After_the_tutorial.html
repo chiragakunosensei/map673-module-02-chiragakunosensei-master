@@ -60,7 +60,7 @@
 	<div class="container">
 		<div class="row">
 				<div class="twelve columns">
-							<h1>Examining Home Ownership in Kentucky</h1>
+							<h1>Map Title</h1>
 				</div>
 		</div>
 		<div class="row">
@@ -68,13 +68,15 @@
 		</div>
 		<section class="row">
 			<div class="six columns">
+			<h2>about this map</h2>
 				<ul>
-					<li>Map authored by: Bradley Gardener</li>
-					<li>Created: October 20th</li>
+					<li>Map authored by: MY NAME</li>
+					<li>Created: DATE</li>
+					<li>Data source: <a target="_blank" href="#">link here</a></li>
 				</ul>
 			</div>
 			<div class="six columns u-pull-right">
-					<p>Where is Something. Why it is there? Watch out for MAUP and the Ecological Fallacy
+					<p>Additional information about the map goes here. You can include <a target="_blank" href="#">additional links </a> as well. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis urna magna, maximus nec laoreet sit amet, dictum ultricies nibh. Ut id auctor lacus. Nam a dolor et justo luctus luctus.
 					</p>
 			</div>
 </section>
@@ -84,7 +86,7 @@
 	<div id="legend"></div>
     
     <div id='ui-controls'>
-  <label>What map do you want to see?:</label>
+  <label>Choose a data attribute:</label>
   <select id="occupied">
     <option value="OWNED_MORT" selected>owned with mortgage</option>
     <option value="OWNED_FREE">owned free and clear</option>
@@ -166,8 +168,7 @@
 			// fit the map's bounds and zoom level using the dataLayer extent
 			map.fitBounds(dataLayer.getBounds(), {
 				paddingTopLeft: [25, 25] // push off top left for sake of legend
-			
-            });			     
+			});			     
    
             addUi(dataLayer);
             updateMap(dataLayer);
@@ -175,9 +176,10 @@
 
         function updateMap (dataLayer){
              // get the class breaks for the current data attribute
-			var breaks = getClassBreaks(dataLayer); // BETWEEN STEP 1 and 2 BREAKS IS PASSED IS RETURNED HERE WHERE IT IS VAR BREAKS
-            //update Legend Breaks 
-			updateLegend(breaks); //STEP 2 SEND VAR BREAKS to UpdateLegend Instead (It will eventually be passed back to addLegend after some work is done :) )
+			var breaks = getClassBreaks(dataLayer);
+
+			addLegend(breaks); // add the legend to the map using breaks
+
 			// loop through each county layer to update the color and tooltip info
 			dataLayer.eachLayer(function(layer) {
 
@@ -205,7 +207,7 @@
 			});  
             
         }
-        function addUi(dataLayer, breaks) {
+        function addUi(dataLayer) {
             // create the slider control
             var selectControl = L.control({ position: 'topright'} );
 
@@ -243,7 +245,7 @@
 			});
 
 			//return array of arrays, e.g., [[0.24,0.25], [0.26, 0.37], etc]
-			return breaks; // BETWEEN STEP 1 and 2 BREAKS IS CREATED HERE AND RETURNED TO WHERE ITS CALLED IN GET CLASS BREAKS
+			return breaks;
 
 		}
 
@@ -266,7 +268,7 @@
 
 		}
 
-		function addLegend(legend) { // Final Step (4) AHHH YES! There IS NO LEGEND VARIABLE HERE BECAUSE IT'S IN updateLegend
+		function addLegend(breaks) {
 
 			// create a new Leaflet control object, and position it top left
 			var legendControl = L.control({ position: 'topleft' });
@@ -289,16 +291,8 @@
 			// add the empty legend div to the map
 			legendControl.addTo(map);
 
-			
-
-		}
-        
-        function updateLegend (breaks){ //Step 1 SEND BREAKS to NEW CALLER BECAUSE IT LIVES HERE INSTEAD OF UP IN addLegend
-            
-            // select the legend, add a title, begin an unordered list and assign to a variable
+			// select the legend, add a title, begin an unordered list and assign to a variable
 			var legend = $('#legend').html("<h5>" + labels[attributeValue] + "</h5>");
-            
-            addLegend(legend) // STEP 3... Of course... need to send LEGEND BACK TO AddLegend
 
 			// loop through the Array of classification break values
 			for (var i = 0; i <= breaks.length - 1; i++) {
@@ -309,51 +303,11 @@
 					'<span style="background:' + color + '"></span> ' +
 					'<label>' + (breaks[i][0] * 100).toLocaleString() + ' &mdash; ' +
 					(breaks[i][1] * 100).toLocaleString() + ' %</label>');
-            }
-        }
+			}
 
-/* I WROTE THIS OUT - IT HELPED! FEEL FREE TO TAKE A PEAK
+		}
 
-updateLegend contains a getColor function... argument for breaks cycled through, and breaks 
-the for loops referes to the variable length 
 
-Breaks must be a universal variable... but it isn't it appears in updateMap and classbreaks function
-
-Previously in addLegend - where was breaks coming from?
-
-ahh it accepted breaks as an argument (addLegend) - this isn't necessary the case now so it should be added now to update legend and taken away from create legend'
-
-I have to call it from it's origin which is in updateMAP'
-
-var Breaks is returned value from getClassBreaks function, which passes in 'data layer as an argument'
-
-dataLayer is passed in from draw map (which takes data from general leaflet tools)
-
-getClassBreaks has data layer passed in from update map 
-
-it makes clusters represented by the value 'breaks'
-
-breaks is retruned up to getClassBreaks which is the function body of Update map - it is not breaks 
-
-which is passsed to addLegend via the breaks variable
-
-in addLegend breaks does the work of the legend, but wait... 
-
-it is used to make the variable color which is passed as an argument into the get color function body
-
-where d equals to all iterations (whatever the particluar value is) and then the classifications themselves (breaks) is borrowed fom the for loop
-the classification scheme is returned to getColor caller which is addLegend 
-Color is used in legend.append to make everything ook nice.
-
-Ah this is the difference 
-
-var legend = L.DomUtil.get('legend'); and var legend = $('#legend').html("<h5>" + labels[attributeValue] + "</h5>");
-were previously in addLegend now the latter is in update legend - lets send that back!
-
-AddLegend accepts the variable Legend from upDateLEgend
-*/
-
-        
 	</script>
 
 </body>
